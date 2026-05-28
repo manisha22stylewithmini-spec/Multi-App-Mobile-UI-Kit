@@ -1,6 +1,6 @@
 import React from 'react';
 import { GlobalUIState, SCREENS_LIST, ScreenData } from '../types';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { ArrowRight, ExternalLink, SearchX, Sparkles } from 'lucide-react';
 
 interface ScreenGalleryProps {
   state: GlobalUIState;
@@ -32,11 +32,38 @@ export const ScreenGallery: React.FC<ScreenGalleryProps> = ({
     }));
   };
 
+  const renderEmptyState = () => (
+    <div className="rounded-[28px] border border-dashed border-gray-200 bg-white/75 p-8 sm:p-12 text-center">
+      <div className="mx-auto mb-4 w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center">
+        <SearchX className="w-5 h-5 text-gray-400" />
+      </div>
+      <h3 className="font-heading text-lg font-bold text-slate-900">
+        No screens match that filter
+      </h3>
+      <p className="mt-1 text-sm text-gray-500 max-w-md mx-auto">
+        Try another category or clear the search to bring the full kit back.
+      </p>
+      <button
+        onClick={() => {
+          playAudioFeedback('tap');
+          setState(prev => ({ ...prev, selectedCategory: 'all', searchQuery: '' }));
+        }}
+        className="mt-5 rounded-2xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-slate-800 active:scale-95"
+      >
+        Reset filters
+      </button>
+    </div>
+  );
+
   if (state.viewMode === 'flow') {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8 text-center max-w-2xl mx-auto">
-          <h2 className="text-xl font-bold font-heading text-slate-900">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-[11px] font-bold text-gray-500 border border-gray-100 mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-[#FF6B35]" />
+            Product journey
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold font-heading text-slate-900">
             Multi-App Interaction Architecture
           </h2>
           <p className="text-xs text-gray-500 mt-1">
@@ -44,6 +71,7 @@ export const ScreenGallery: React.FC<ScreenGalleryProps> = ({
           </p>
         </div>
 
+        {filteredScreens.length === 0 ? renderEmptyState() : (
         <div className="relative">
           {/* Flow Connection Path */}
           <div className="absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-[#FF6B35] via-[#7B5EA7] to-[#2196F3] hidden xl:block opacity-20 -translate-y-1/2" />
@@ -69,7 +97,7 @@ export const ScreenGallery: React.FC<ScreenGalleryProps> = ({
                 </div>
 
                 {/* Device Micro Shell */}
-                <div className="bg-white rounded-[32px] p-2.5 shadow-sm border border-gray-100 hover:shadow-md transition-all group flex-1 flex flex-col">
+                  <div className="bg-white rounded-[28px] p-2.5 shadow-sm border border-gray-100 hover:shadow-md transition-all group flex-1 flex flex-col">
                   {/* Top Bar */}
                   <div className="w-full bg-gray-50 rounded-t-2xl py-1.5 px-3 flex items-center justify-between border-b border-gray-100 text-[9px] text-gray-400">
                     <span className="font-bold truncate">{screen.screen_name}</span>
@@ -97,6 +125,7 @@ export const ScreenGallery: React.FC<ScreenGalleryProps> = ({
             ))}
           </div>
         </div>
+        )}
       </div>
     );
   }
@@ -105,26 +134,31 @@ export const ScreenGallery: React.FC<ScreenGalleryProps> = ({
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-base font-bold font-heading text-slate-900">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-[11px] font-bold text-gray-500 border border-gray-100 mb-2">
+            <Sparkles className="w-3.5 h-3.5 text-[#FF4D8F]" />
+            Component library
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold font-heading text-slate-900">
             Interactive Screen Gallery
           </h2>
-          <p className="text-xs text-gray-500">
+          <p className="text-sm text-gray-500 mt-1">
             Browse fully functional layouts inside responsive desktop card wrappers.
           </p>
         </div>
 
-        <span className="text-xs text-gray-400 font-medium">
+        <span className="text-xs text-gray-400 font-bold bg-white border border-gray-100 rounded-full px-3 py-1.5 w-fit">
           Showing {filteredScreens.length} of {SCREENS_LIST.length} Screens
         </span>
       </div>
 
+      {filteredScreens.length === 0 ? renderEmptyState() : (
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
         {filteredScreens.map((screen: ScreenData) => (
           <div 
             key={screen.id} 
-            className="bg-white rounded-[32px] p-5 shadow-xs border border-gray-100 hover:shadow-sm transition-all flex flex-col"
+            className="bg-white rounded-[28px] p-5 shadow-xs border border-gray-100 hover:shadow-[0_22px_60px_-45px_rgba(15,23,42,0.8)] hover:-translate-y-0.5 transition-all flex flex-col"
           >
             {/* Header info */}
             <div className="flex items-start justify-between mb-4">
@@ -138,14 +172,14 @@ export const ScreenGallery: React.FC<ScreenGalleryProps> = ({
                     {screen.app_type}
                   </span>
                 </div>
-                <h3 className="text-sm font-bold font-heading text-slate-900 mt-0.5">
+                <h3 className="text-base font-bold font-heading text-slate-900 mt-0.5">
                   {screen.screen_name}
                 </h3>
               </div>
 
               <button
                 onClick={() => handleLaunchSimulator(screen.id)}
-                className="p-2 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-slate-900 transition-all text-xs flex items-center space-x-1"
+              className="p-2 rounded-xl bg-gray-50 hover:bg-slate-900 hover:text-white text-gray-600 transition-all text-xs flex items-center space-x-1"
                 title="Launch in Device Simulator"
               >
                 <span>Simulate</span>
@@ -154,7 +188,7 @@ export const ScreenGallery: React.FC<ScreenGalleryProps> = ({
             </div>
 
             {/* Screen Content Wrapper */}
-            <div className="relative w-full h-[440px] bg-[#F0F2F8] rounded-2xl overflow-y-auto overflow-x-hidden no-scrollbar border border-gray-100/60 flex-1">
+            <div className="relative w-full h-[440px] bg-[#F0F2F8] rounded-2xl overflow-y-auto overflow-x-hidden no-scrollbar border border-gray-100/60 flex-1 shadow-inner">
               {renderScreenContent(screen.id)}
             </div>
 
@@ -171,6 +205,7 @@ export const ScreenGallery: React.FC<ScreenGalleryProps> = ({
           </div>
         ))}
       </div>
+      )}
 
     </div>
   );

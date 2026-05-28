@@ -12,10 +12,26 @@ body {
   background-color: #F0F2F8;
   color: #1A1A2E;
   overflow-x: hidden;
+  text-rendering: geometricPrecision;
 }
 
 h1, h2, h3, h4, h5, h6, .font-heading {
   font-family: var(--font-heading);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(255, 107, 53, 0.28);
+  outline-offset: 3px;
 }
 
 /* Custom gorgeous scrollbar for the UI kit */
@@ -102,4 +118,22 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .mobile-screen-shadow {
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05),
               0 10px 30px -5px rgba(0, 0, 0, 0.1);
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
 }

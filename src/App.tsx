@@ -16,7 +16,7 @@ import { BudgetScreen } from './screens/BudgetScreen';
 import { PremiumPaywallScreen } from './screens/PremiumPaywallScreen';
 
 // Bottom Global Tab Navigation Icons
-import { Home, Compass, Bell, User, Settings, Menu, X } from 'lucide-react';
+import { Home, Compass, Bell, User, Settings, Menu, X, ArrowRight, Grid3X3, MousePointerClick, Palette, PlayCircle } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [state, setState] = useState<GlobalUIState>({
@@ -123,6 +123,13 @@ export const App: React.FC = () => {
   };
 
   const currentScreen = SCREENS_LIST.find(s => s.id === state.activeScreenId) || SCREENS_LIST[0];
+  const activeIndex = SCREENS_LIST.findIndex(s => s.id === state.activeScreenId);
+  const nextScreen = SCREENS_LIST[(activeIndex + 1) % SCREENS_LIST.length];
+
+  const showNextScreen = () => {
+    playAudioFeedback('tap');
+    setState(prev => ({ ...prev, activeScreenId: nextScreen.id }));
+  };
 
   // Helper to render pure active screens
   const renderScreenContent = (screenId: number) => {
@@ -229,16 +236,72 @@ export const App: React.FC = () => {
       {/* Main Container Core */}
       <main className="relative overflow-hidden">
         
-        {/* Dynamic Presentation Blobs for playfulness */}
-        {state.theme === 'light' && (
-          <>
-            <div className="absolute top-10 left-10 w-72 h-72 lg:w-96 lg:h-96 bg-[#FF6B35]/5 rounded-full blur-3xl pointer-events-none animate-blob" />
-            <div className="absolute bottom-10 right-10 w-72 h-72 lg:w-96 lg:h-96 bg-[#7B5EA7]/5 rounded-full blur-3xl pointer-events-none animate-blob" style={{ animationDelay: '2s' }} />
-          </>
-        )}
-
         {state.viewMode === 'single' ? (
           <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
+            <section className="mb-5 sm:mb-8 rounded-[28px] border border-white/80 bg-white/75 backdrop-blur-xl shadow-[0_24px_80px_-55px_rgba(15,23,42,0.65)] overflow-hidden">
+              <div className="grid gap-0 lg:grid-cols-[1.4fr_0.9fr]">
+                <div className="p-5 sm:p-6 lg:p-7">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1 text-[11px] font-bold text-white">
+                      <PlayCircle className="w-3.5 h-3.5 text-[#FFD166]" />
+                      Live simulator
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-[11px] font-bold text-gray-500 border border-gray-100">
+                      Screen {state.activeScreenId} of {SCREENS_LIST.length}
+                    </span>
+                  </div>
+                  <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-950 leading-tight">
+                    {currentScreen.screen_name}
+                  </h2>
+                  <p className="mt-2 max-w-2xl text-sm text-gray-600 leading-relaxed">
+                    {currentScreen.description}
+                  </p>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    <button
+                      onClick={showNextScreen}
+                      className="inline-flex items-center gap-2 rounded-2xl bg-[#FF6B35] px-4 py-2.5 text-xs font-bold text-white shadow-[0_14px_30px_-18px_rgba(255,107,53,0.95)] transition-all hover:bg-[#e85f2f] active:scale-95"
+                    >
+                      Next screen
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        playAudioFeedback('tap');
+                        setState(prev => ({ ...prev, viewMode: 'gallery' }));
+                      }}
+                      className="inline-flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 text-xs font-bold text-slate-800 border border-gray-100 transition-all hover:border-gray-200 hover:bg-gray-50 active:scale-95"
+                    >
+                      <Grid3X3 className="w-4 h-4 text-[#7B5EA7]" />
+                      Browse all
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 lg:grid-cols-1 border-t lg:border-t-0 lg:border-l border-gray-100 bg-slate-50/70">
+                  {[
+                    { icon: MousePointerClick, label: 'Interactive', value: 'Tap-ready' },
+                    { icon: Palette, label: 'Accent', value: currentScreen.color_accent },
+                    { icon: Grid3X3, label: 'Category', value: currentScreen.app_type },
+                  ].map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={item.label} className="p-4 sm:p-5 border-r last:border-r-0 lg:border-r-0 lg:border-b lg:last:border-b-0 border-gray-100">
+                        <div className="w-9 h-9 rounded-2xl bg-white border border-gray-100 flex items-center justify-center mb-2">
+                          <Icon className="w-4 h-4 text-slate-700" />
+                        </div>
+                        <span className="block text-[10px] uppercase tracking-wider font-bold text-gray-400">
+                          {item.label}
+                        </span>
+                        <span className="block mt-0.5 text-xs sm:text-sm font-bold text-slate-900 capitalize truncate">
+                          {item.value}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+
             <div className="flex flex-col xl:flex-row items-center xl:items-start justify-center gap-6 lg:gap-8 xl:gap-16">
               
               {/* Left Side: Dynamic Screen Selector and Specification Details */}
@@ -281,14 +344,22 @@ export const App: React.FC = () => {
                     {[1, 2, 6, 7].includes(state.activeScreenId) && renderBottomTabBar()}
                   </DeviceFrame>
 
-                  {/* Device Control Footnotes */}
-                  <div className="text-center mt-3 px-4 space-y-1 max-w-sm">
-                    <span className="text-[10px] sm:text-[11px] font-bold text-gray-400 block uppercase tracking-wider">
-                      Interactive Live Shell • 375×812
-                    </span>
-                    <p className="text-[11px] sm:text-xs text-gray-500 leading-relaxed">
-                      Tap any card, button, or switch to test micro-interactions. Fully responsive on mobile, tablet, and desktop viewports.
-                    </p>
+                  <div className="mt-3 w-full max-w-sm px-2">
+                    <div className="rounded-2xl bg-white/80 border border-white px-4 py-3 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.75)]">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <span className="text-[10px] sm:text-[11px] font-bold text-gray-400 block uppercase tracking-wider">
+                            Interactive Live Shell
+                          </span>
+                          <p className="text-[11px] sm:text-xs text-gray-500 leading-relaxed mt-0.5">
+                            Tap inside the phone to test real states and micro-interactions.
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded-full bg-slate-900 px-2.5 py-1 text-[10px] font-bold text-white">
+                          375×812
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
